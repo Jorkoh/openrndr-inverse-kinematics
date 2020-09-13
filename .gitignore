@@ -1,0 +1,6 @@
+application.log
+build
+out
+video
+.idea
+.gradle
