@@ -10,6 +10,7 @@ fun Skeleton.draw(drawer: Drawer) {
 private fun Joint.draw(drawer: Drawer) {
     // Don't draw if it has no parent
     parentJoint?.let { parentJoint ->
+        drawer.circle(position, 5.0)
         drawer.lineSegment(parentJoint.position, position)
         attachedJoints.forEach { it.draw(drawer) }
     }

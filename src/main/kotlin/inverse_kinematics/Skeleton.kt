@@ -17,8 +17,11 @@ data class Skeleton(
 
     fun moveTowards(target: Vector2) {
         val rootPosition = root.position
+        // TODO support sub-bases
         val joints = mutableListOf(root)
         addJoints(root, joints)
+        val constraints = mutableListOf<Pair<Double, Double>>()
+        addConstraints(root, constraints)
 
         val tolerance = 1.0
         val maxIterations = 10
@@ -46,7 +49,19 @@ data class Skeleton(
                 } else {
                     val current = if (i < joints.size - 1) joints[i].position else target
                     val previous = joints[i - 1].position
-                    joints[i].position = previous + (current - previous).setLength(linkLengths[i - 1])
+                    // Clamp according to joint constraints
+                    val constrainedDirection = if (i == 1) {
+                        // No previous link on the skeleton, no need to clamp
+                        current - previous
+                    } else {
+                        (current - previous).clampAngleDifference(
+                             previous - joints[i - 2].position,
+                            constraints[i-1].first,
+                            constraints[i-1].second
+                        )
+                    }
+
+                    joints[i].position = previous + constrainedDirection.setLength(linkLengths[i - 1])
                 }
             }
             iteration++
@@ -56,5 +71,10 @@ data class Skeleton(
     private fun addJoints(joint: Joint, joints: MutableList<Joint>) {
         joints.addAll(joint.attachedJoints)
         joint.attachedJoints.forEach { addJoints(it, joints) }
+    }
+
+    private fun addConstraints(joint: Joint, constraints: MutableList<Pair<Double, Double>>) {
+        constraints.addAll(joint.attachedJointsConstraints)
+        joint.attachedJoints.forEach { addConstraints(it, constraints) }
     }
 }
