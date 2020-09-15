@@ -40,10 +40,10 @@ fun Double.angleDifference(secondRadiansAngle: Double): Double {
 }
 
 fun Vector2.clampAngleDifference(secondVector: Vector2, minAngleDiff: Double, maxAngleDiff: Double): Vector2 {
-    val angleDiff = (secondVector).clockwiseAngle(this)
+    val angleDiff = (-secondVector).clockwiseAngle(this)
     return when {
-        angleDiff > maxAngleDiff -> Vector2.unitWithAngle((-secondVector).angle() + maxAngleDiff)
-        angleDiff < minAngleDiff -> Vector2.unitWithAngle((-secondVector).angle() + minAngleDiff)
+        angleDiff > maxAngleDiff -> Vector2.unitWithAngle(secondVector.angle() + maxAngleDiff)
+        angleDiff < minAngleDiff -> Vector2.unitWithAngle(secondVector.angle() + minAngleDiff)
         else -> this
     }
 }
