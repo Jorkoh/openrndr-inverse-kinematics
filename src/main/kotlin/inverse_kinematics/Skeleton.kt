@@ -6,14 +6,12 @@ data class Skeleton(
     val root: Joint
 ) {
     private val links: Map<Pair<Joint, Joint>, Double>
-    private val ends: List<Joint>
 
     init {
         val tempLinks = mutableMapOf<Pair<Joint, Joint>, Double>()
         val tempEnds = mutableListOf<Joint>()
         addLinksAndEnds(root, tempLinks, tempEnds)
         links = tempLinks
-        ends = tempEnds
     }
 
     // Note: it tries to solve even on cases where targets are unreachable
@@ -29,14 +27,14 @@ data class Skeleton(
             // STAGE 1: FORWARD REACHING
             val subBasePositions = mutableMapOf<Joint, MutableList<Vector2>>()
 
-            val forwardStuffToCalculate = ends.toMutableList()
+            val forwardStuffToCalculate = targets.keys.toMutableList()
             while (forwardStuffToCalculate.size > 0) {
                 val previous = forwardStuffToCalculate.first()
                 forwardStuffToCalculate.remove(previous)
                 val current = previous.parentJoint ?: continue
                 if (previous.attachedJoints.size == 0) {
                     // It's an end
-                    previous.position = requireNotNull(targets[previous]) { "One of the ends doesn't have a target" }
+                    previous.position = requireNotNull(targets[previous])
                 }
 
                 val length = requireNotNull(links[Pair(current, previous)]) { "Missing a link" }
@@ -91,11 +89,11 @@ data class Skeleton(
                 backwardStuffToCalculate.addAll(current.attachedJoints)
             }
             iteration++
-        } while (!ends.allOnTarget(targets, tolerance) && iteration < maxIterations)
+        } while (!targets.allOnTarget(tolerance) && iteration < maxIterations)
     }
 
-    private fun List<Joint>.allOnTarget(targets: Map<Joint, Vector2>, tolerance: Double): Boolean {
-        return all { end -> end.position.distanceTo(targets[end] ?: end.position) <= tolerance }
+    private fun Map<Joint, Vector2>.allOnTarget(tolerance: Double): Boolean {
+        return all { entry -> entry.key.position.distanceTo(entry.value) <= tolerance }
     }
 
     private fun addLinksAndEnds(
