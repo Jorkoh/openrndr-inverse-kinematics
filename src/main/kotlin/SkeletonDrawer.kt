@@ -3,7 +3,6 @@ import inverse_kinematics.Skeleton
 import org.openrndr.draw.Drawer
 import org.openrndr.draw.loadFont
 import org.openrndr.math.Vector2
-import org.openrndr.shape.contour
 
 val font = loadFont("data/default.otf", 12.0)
 

@@ -90,10 +90,20 @@ data class Skeleton(
             }
             iteration++
         } while (!targets.allOnTarget(tolerance) && iteration < maxIterations)
+
+        targets.roundToTarget(tolerance)
     }
 
     private fun Map<Joint, Vector2>.allOnTarget(tolerance: Double): Boolean {
-        return all { entry -> entry.key.position.distanceTo(entry.value) <= tolerance }
+        return all { entry ->entry.key.position.distanceTo(entry.value) <= tolerance        }
+    }
+
+    private fun Map<Joint, Vector2>.roundToTarget(tolerance: Double) {
+        forEach { entry ->
+            if (entry.key.position.distanceTo(entry.value) <= tolerance) {
+                entry.key.position = entry.value
+            }
+        }
     }
 
     private fun addLinksAndEnds(
