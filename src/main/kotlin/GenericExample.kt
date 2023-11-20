@@ -36,7 +36,7 @@ fun main() = application {
         val ends = listOf(end1, end2, end3)
         val targets = ends.map { Pair(it, it.position) }.toMap().toMutableMap()
         var mouseTargetIndex = 0
-        mouse.clicked.listen {
+        mouse.buttonDown.listen {
             val end = ends[mouseTargetIndex++]
             targets[end] = mouse.position
             mouseTargetIndex %= ends.size
